@@ -2,6 +2,7 @@ package com.ldf.media.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -82,4 +83,7 @@ public class MediaServerConfig {
     private Integer segDur;
 
     private Integer segNum;
+
+    @NestedConfigurationProperty
+    private MediaServerCustomConfig custom;
 }

@@ -5,6 +5,7 @@ import com.aizuda.zlm4j.core.ZLMApi;
 import com.aizuda.zlm4j.structure.MK_EVENTS;
 import com.aizuda.zlm4j.structure.MK_INI;
 import com.ldf.media.config.MediaServerConfig;
+import com.ldf.media.config.MediaServerCustomConfig;
 import com.sun.jna.Native;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Objects;
 
 /**
  * 流媒体上下文
@@ -120,22 +122,31 @@ public class MediaServerContext {
      */
     public boolean startMediaServer() {
         boolean result = false;
-        //创建http服务器 0:失败,非0:端口号
-        short http_server_port = ZLM_API.mk_http_server_start(config.getHttp_port().shortValue(), 0);
-        result=http_server_port == 0;
-        log.info("【MediaServer】HTTP流媒体服务启动：{}", result ? "失败" : "成功，端口：" + http_server_port);
-        //创建rtsp服务器 0:失败,非0:端口号
-        short rtsp_server_port = ZLM_API.mk_rtsp_server_start(config.getRtsp_port().shortValue(), 0);
-        result=rtsp_server_port == 0;
-        log.info("【MediaServer】RTSP流媒体服务启动：{}", result ? "失败" : "成功，端口：" + rtsp_server_port);
-        //创建rtmp服务器 0:失败,非0:端口号
-        short rtmp_server_port = ZLM_API.mk_rtmp_server_start(config.getRtmp_port().shortValue(), 0);
-        result=rtmp_server_port == 0;
-        log.info("【MediaServer】RTMP流媒体服务启动：{}",result ? "失败" : "成功，端口：" + rtmp_server_port);
-        //创建rtc服务器 0:失败,非0:端口号
-        short rtc_server_port = ZLM_API.mk_rtc_server_start(config.getRtc_port().shortValue());
-        result=rtc_server_port == 0;
-        log.info("【MediaServer】RTC流媒体服务启动：{}", result ? "失败" : "成功，端口：" + rtc_server_port);
+        MediaServerCustomConfig custom = config.getCustom();
+        if (!Objects.equals(custom.getEnable_http_server(), false)) {
+            //创建http服务器 0:失败,非0:端口号
+            short http_server_port = ZLM_API.mk_http_server_start(config.getHttp_port().shortValue(), 0);
+            result = http_server_port == 0;
+            log.info("【MediaServer】HTTP流媒体服务启动：{}", result ? "失败" : "成功，端口：" + http_server_port);
+        }
+        if (!Objects.equals(custom.getEnable_rtsp_server(), false)) {
+            //创建rtsp服务器 0:失败,非0:端口号
+            short rtsp_server_port = ZLM_API.mk_rtsp_server_start(config.getRtsp_port().shortValue(), 0);
+            result = rtsp_server_port == 0;
+            log.info("【MediaServer】RTSP流媒体服务启动：{}", result ? "失败" : "成功，端口：" + rtsp_server_port);
+        }
+        if (!Objects.equals(custom.getEnable_rtmp_server(), false)) {
+            //创建rtmp服务器 0:失败,非0:端口号
+            short rtmp_server_port = ZLM_API.mk_rtmp_server_start(config.getRtmp_port().shortValue(), 0);
+            result = rtmp_server_port == 0;
+            log.info("【MediaServer】RTMP流媒体服务启动：{}", result ? "失败" : "成功，端口：" + rtmp_server_port);
+        }
+        if (!Objects.equals(custom.getEnable_rtc_server(), false)) {
+            //创建rtc服务器 0:失败,非0:端口号
+            short rtc_server_port = ZLM_API.mk_rtc_server_start(config.getRtc_port().shortValue());
+            result = rtc_server_port == 0;
+            log.info("【MediaServer】RTC流媒体服务启动：{}", result ? "失败" : "成功，端口：" + rtc_server_port);
+        }
         return !result;
     }
 
